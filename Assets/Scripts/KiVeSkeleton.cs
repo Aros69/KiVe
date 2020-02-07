@@ -15,8 +15,13 @@ public class Bone{
     }
 
     public void update(){
-        bone.transform.position = endJoint.position - startJoint.position;
-        bone.transform.LookAt(endJoint.position);
+        bone.transform.position = (startJoint.position + endJoint.position )/2;
+        bone.transform.up = startJoint.position - endJoint.position;
+        bone.transform.localScale = new Vector3(bone.transform.localScale.x, 
+            Vector3.Distance(startJoint.position, endJoint.position)/2,
+            bone.transform.localScale.z);
+        /*bone.transform.position = endJoint.position - startJoint.position;
+        bone.transform.LookAt(endJoint.position);*/
     }
 }
 
@@ -58,6 +63,11 @@ public class KiVeSkeleton : MonoBehaviour
     private Transform rightHand = null;
     //private KinectVRPN kinect = null;
 
+    const int HEAD = 0, NECK = 1, RIGHT_SHOULDER = 2, RIGHT_ELBOW = 3, 
+        RIGHT_HAND=4, LEFT_SHOULDER = 5, LEFT_ELBOW = 6, LEFT_HAND = 7,
+        RIGHT_HIPS = 8, RIGHT_KNEE = 9, RIGHT_FOOT = 10, LEFT_HIPS = 11,
+        LEFT_KNEE = 12, LEFT_FOOT = 13;
+
     private List<GameObject> joints = new List<GameObject>();
     private List<Bone> bones = new List<Bone>();
 
@@ -83,15 +93,37 @@ public class KiVeSkeleton : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        getVRComponent();
+        getVRComponent();   
         //getKinectVRPN();
 
         for(int i=0;i<14;++i){
             joints.Add(GameObject.CreatePrimitive(PrimitiveType.Sphere));
             joints[i].transform.localScale = new Vector3(0.1f, 0.1f, 0.1f);
+            switch(i){
+                case HEAD:              {joints[i].name = "Head";           break;}
+                case NECK:              {joints[i].name = "Neck";           break;}
+                case RIGHT_SHOULDER:    {joints[i].name = "Right Shoulder"; break;}
+                case RIGHT_ELBOW:       {joints[i].name = "Right Elbow";    break;}
+                case RIGHT_HAND:        {joints[i].name = "Right Hand";     break;}
+                case LEFT_SHOULDER:     {joints[i].name = "Left Shoulder";  break;}
+                case LEFT_ELBOW:        {joints[i].name = "Left Elbow";     break;}
+                case LEFT_HAND:         {joints[i].name = "Left Hand";      break;}
+                case RIGHT_HIPS:        {joints[i].name = "Right Hip";      break;}
+                case RIGHT_KNEE:        {joints[i].name = "Right Knee";     break;}
+                case RIGHT_FOOT:        {joints[i].name = "Right Foot";     break;}
+                case LEFT_HIPS:         {joints[i].name = "Left Hip";       break;}
+                case LEFT_KNEE:         {joints[i].name = "Left Knee";      break;}
+                case LEFT_FOOT:         {joints[i].name = "Left Foot";      break;}
+                default : break;
+            }
         }
-        Debug.Log(joints.Count);
-        // TODO better code because it's irreadable:( 
+        //Debug.Log(joints.Count);
+        // TODO better code because it's irreadable :( 
+        // or leave it that way, it works
+
+        // TODO Erreur !! les deux épaules ont l'air d'être lié à la tête et pas au bas du coup !!!!
+        // A CORRIGER !!!!!
+
         for(int i=0;i<14;++i){
             if(i==4){
                 bones.Add(new Bone(joints[1].transform, joints[i+1].transform));
@@ -120,15 +152,25 @@ public class KiVeSkeleton : MonoBehaviour
     }
 
     private void asICanSkeletonUpdate(){
-        for(int i=0;i<14;++i){
-            if(i == 0) {
-                joints[i].transform.position = headset.position;  
-            } else if(i==4){
-                joints[i].transform.position = leftHand.position;  
-            } else if(i==7){
-                joints[i].transform.position = rightHand.position;  
-            }
-        }
+            joints[HEAD].transform.position = headset.position;  
+            joints[LEFT_HAND].transform.position = leftHand.position;  
+            joints[RIGHT_HAND].transform.position = rightHand.position;
+
+            Transform cameraRig = GameObject.Find("/[CameraRig]").transform;
+            Vector3 playerPos = headset.position;
+            float playerHeigth = headset.localPosition.y;
+            joints[LEFT_FOOT].transform.position        = playerPos + new Vector3(0.3f, 0, 0);
+            joints[RIGHT_FOOT].transform.position       = playerPos + new Vector3(-0.3f, 0, 0);
+            joints[LEFT_KNEE].transform.position        = playerPos + new Vector3(0.3f, -3*playerHeigth/4, 0);
+            joints[RIGHT_KNEE].transform.position       = playerPos + new Vector3(-0.3f, -3*playerHeigth/4, 0);
+            joints[LEFT_HIPS].transform.position        = playerPos + new Vector3(0.3f, -2*playerHeigth/4, 0);
+            joints[RIGHT_HIPS].transform.position       = playerPos + new Vector3(-0.3f, -2*playerHeigth/4, 0);
+            joints[LEFT_SHOULDER].transform.position    = playerPos + new Vector3(0.3f, -playerHeigth/4, 0);
+            joints[RIGHT_SHOULDER].transform.position   = playerPos + new Vector3(-0.3f, -playerHeigth/4, 0);
+            joints[NECK].transform.position             = playerPos + new Vector3(0, -playerHeigth/4, 0);
+            joints[LEFT_ELBOW].transform.position       = (leftHand.position + joints[LEFT_SHOULDER].transform.position)/2;
+            joints[RIGHT_ELBOW].transform.position      = (rightHand.position + joints[RIGHT_SHOULDER].transform.position)/2;
+
         for(int i=0;i<14;++i){
             bones[i].update();
         }
