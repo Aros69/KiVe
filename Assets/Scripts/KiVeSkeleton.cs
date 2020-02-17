@@ -84,6 +84,8 @@ public class KiVeSkeleton : MonoBehaviour
     private GameObject skeletonData = null;
     private SkeletonContainer kinectSkeleton = null;
 
+    private Calibrator calibrator;
+
     private void getVRComponent(){
         // Search and hopefully find the CameraRig component of SteamVR plugin (the component should be at root of scene)
         Transform cameraRig = GameObject.Find("/[CameraRig]").transform;
@@ -200,6 +202,21 @@ public class KiVeSkeleton : MonoBehaviour
 
     public void kinectSkeletonUpdate() {
         List<Kine_joint> jointsKinect = kinectSkeleton.GetJoints();
+        Debug.Log(jointsKinect.Count);
+        /*Vector3 leftCtrl = getLeftHand().position, 
+            rightCtrl = getRightHand().position,
+            headset = getHeadset().position,
+            leftHand = jointsKinect[LEFT_HAND].position,
+            rightHand = jointsKinect[RIGHT_HAND].position,
+            head = jointsKinect[HEAD].position;
+        calibrator.computeKive(leftCtrl,  rightCtrl,  headset,
+          leftHand,  rightHand,  head);
+        Debug.Log(calibrator.kiveMat);*/
+        for(int i=0;i<jointsKinect.Count;++i){
+            if(i!=HEAD || i!=RIGHT_HAND||i!=LEFT_HAND) {
+                joints[i] = kinect2VivePos(jointsKinect);
+            }
+        }
     }
 
     // Update is called once per frame

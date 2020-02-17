@@ -2,17 +2,12 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Calibrator : MonoBehaviour
+public class Calibrator
 {
-    Matrix4x4 kiveMat;
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
+    public Matrix4x4 kiveMat;
 
     // Compute the transformation matrix
-    void computeKive(Vector3 leftCtrl, Vector3 rightCtrl, Vector3 headset,
+    public void computeKive(Vector3 leftCtrl, Vector3 rightCtrl, Vector3 headset,
          Vector3 leftHand, Vector3 rightHand, Vector3 head)
     {
         Matrix4x4 posKiMat = Matrix4x4.identity;
@@ -30,14 +25,8 @@ public class Calibrator : MonoBehaviour
     }
 
     // Return the joint position in Vive coordinates
-    Vector3 kinect2VivePos(Vector3 jointPos)
+    public Vector3 kinect2VivePos(Vector3 jointPos)
     {
         return kiveMat.MultiplyVector(jointPos);
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
     }
 }

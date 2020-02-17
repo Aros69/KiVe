@@ -3,16 +3,18 @@ using System.Collections.Generic;
 using UnityEngine;
 using Mirror;
 
+/// <summary>
+/// Contains the data of a joint specified by the vrpn
+/// </summary>
+public struct Kine_joint
+{
+    public Vector3 position;
+    public Quaternion rotation;
+}
+
 public class SkeletonContainer : NetworkBehaviour
 {
-    /// <summary>
-    /// Contains the data of a joint specified by the vrpn
-    /// </summary>
-    public struct Kine_joint
-    {
-        public Vector3 position;
-        public Quaternion rotation;
-    }
+    
     
     [SerializeField] private GameObject skeletonContainerObj;
     [SerializeField] private GameObject UVRPN_Manager;
