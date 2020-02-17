@@ -15,7 +15,7 @@ namespace UVRPN.Core
         [SerializeField] [HideInInspector] private bool trackPosition = true;
         [SerializeField] [HideInInspector] private bool localPosition = true;
         [SerializeField] [HideInInspector] private InvertAxis invertPos;
-        [SerializeField] [HideInInspector] [Range(0, 100)] private float scale = 1;
+        [SerializeField] [HideInInspector] [Range(0, 100)] public float scale = 1;
 
 
         private Coroutine positionCoroutine;
