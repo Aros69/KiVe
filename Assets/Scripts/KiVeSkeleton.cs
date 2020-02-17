@@ -81,6 +81,9 @@ public class KiVeSkeleton : MonoBehaviour
     private List<GameObject> joints = new List<GameObject>();
     private List<Bone> bones = new List<Bone>();
 
+    private GameObject skeletonData = null;
+    private SkeletonContainer kinectSkeleton = null;
+
     private void getVRComponent(){
         // Search and hopefully find the CameraRig component of SteamVR plugin (the component should be at root of scene)
         Transform cameraRig = GameObject.Find("/[CameraRig]").transform;
@@ -98,7 +101,13 @@ public class KiVeSkeleton : MonoBehaviour
     }
 
     // TODO
-    private void getKinectVRPN(){}
+    private void getKinectVRPN(){
+        skeletonData = GameObject.Find("/SkeletonData(Clone)");
+        if(skeletonData !=null){
+            Debug.Log("ON A LE SQUELETTE !");
+            kinectSkeleton = skeletonData.GetComponent<SkeletonContainer>();
+        }
+    }
 
     // Start is called before the first frame update
     void Start()
@@ -189,19 +198,23 @@ public class KiVeSkeleton : MonoBehaviour
         }
     }
 
+    public void kinectSkeletonUpdate() {
+        List<Kine_joint> jointsKinect = kinectSkeleton.GetJoints();
+    }
+
     // Update is called once per frame
     void Update()
     {
         if(headset == null || leftHand == null || rightHand == null) {
             getVRComponent();
         }
-        //if(kinect == null){getKinectVRPN();}
+        if(skeletonData == null){getKinectVRPN();}
 
-        //if(kinect == null){
+        if(skeletonData == null){
             asICanSkeletonUpdate();
-        //} else {
-            // kinectSkeletonUpdate()
-        //}
+        } else {
+            kinectSkeletonUpdate();
+        }
         
     }
 }
