@@ -34,8 +34,9 @@ public class SkeletonContainer : NetworkBehaviour
             InitJointsFromSkeleton();
             Debug.Log("Number of Joints in the skeleton : " + m_skeleton.Count);
         }
-        else // If the object is not the server, we want to disable de UVRPN
+        else // If the object is not the server, we want to disable de UVRPN but still keep track of the skeleton
         {
+            InitJointsFromSkeleton();
             skeletonContainerObj.GetComponent<ShowKiSkeleton>().DisableVRPN();
             UVRPN_Manager.SetActive(false);
         }
@@ -72,10 +73,12 @@ public class SkeletonContainer : NetworkBehaviour
     
     public void UpdateJoints()
     {
+        Debug.Log("Nombre de joint dans le squelettes : " + m_skeleton.Count);
         for(int i = 0; i < m_skeleton.Count; i++)
         {
             Kine_joint j = new Kine_joint(); j.position = m_skeleton[i].position; j.rotation = m_skeleton[i].rotation;
             m_Kine_joints[i] = j;
+            Debug.Log("Joint n° : "+ i + " est a la position" + m_Kine_joints[i].position);
         }
     }
 }
