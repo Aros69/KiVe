@@ -13,6 +13,7 @@ public class Bone{
         startJoint = start;
         endJoint = end;
         bone = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
+        bone.name = "PlayerBone";
         bone.transform.localScale = new Vector3(0.1f, 1f, 0.1f);
 
         Rigidbody tempRigidBody = bone.AddComponent<Rigidbody>();
@@ -113,21 +114,22 @@ public class KiVeSkeleton : MonoBehaviour
             tempRigidBody = joints[i].AddComponent<Rigidbody>();
             tempRigidBody.useGravity = false;
             tempRigidBody.isKinematic = false;
+            string header = "Player";
             switch(i){
-                case HEAD:              {joints[i].name = "Head";           break;}
-                case NECK:              {joints[i].name = "Neck";           break;}
-                case RIGHT_SHOULDER:    {joints[i].name = "Right Shoulder"; break;}
-                case RIGHT_ELBOW:       {joints[i].name = "Right Elbow";    break;}
-                case RIGHT_HAND:        {joints[i].name = "Right Hand";     break;}
-                case LEFT_SHOULDER:     {joints[i].name = "Left Shoulder";  break;}
-                case LEFT_ELBOW:        {joints[i].name = "Left Elbow";     break;}
-                case LEFT_HAND:         {joints[i].name = "Left Hand";      break;}
-                case RIGHT_HIPS:        {joints[i].name = "Right Hip";      break;}
-                case RIGHT_KNEE:        {joints[i].name = "Right Knee";     break;}
-                case RIGHT_FOOT:        {joints[i].name = "Right Foot";     break;}
-                case LEFT_HIPS:         {joints[i].name = "Left Hip";       break;}
-                case LEFT_KNEE:         {joints[i].name = "Left Knee";      break;}
-                case LEFT_FOOT:         {joints[i].name = "Left Foot";      break;}
+                case HEAD:              {joints[i].name = header + "Head";           break;}
+                case NECK:              {joints[i].name = header + "Neck";           break;}
+                case RIGHT_SHOULDER:    {joints[i].name = header + "Right Shoulder"; break;}
+                case RIGHT_ELBOW:       {joints[i].name = header + "Right Elbow";    break;}
+                case RIGHT_HAND:        {joints[i].name = header + "Right Hand";     break;}
+                case LEFT_SHOULDER:     {joints[i].name = header + "Left Shoulder";  break;}
+                case LEFT_ELBOW:        {joints[i].name = header + "Left Elbow";     break;}
+                case LEFT_HAND:         {joints[i].name = header + "Left Hand";      break;}
+                case RIGHT_HIPS:        {joints[i].name = header + "Right Hip";      break;}
+                case RIGHT_KNEE:        {joints[i].name = header + "Right Knee";     break;}
+                case RIGHT_FOOT:        {joints[i].name = header + "Right Foot";     break;}
+                case LEFT_HIPS:         {joints[i].name = header + "Left Hip";       break;}
+                case LEFT_KNEE:         {joints[i].name = header + "Left Knee";      break;}
+                case LEFT_FOOT:         {joints[i].name = header + "Left Foot";      break;}
                 default : break;
             }
         }
