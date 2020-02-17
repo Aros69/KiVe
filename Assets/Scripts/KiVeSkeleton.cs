@@ -7,11 +7,17 @@ public class Bone{
     private Transform endJoint = null;
     private GameObject bone = null;
 
+    public GameObject getBone(){return bone;}
+
     public Bone(Transform start, Transform end){
         startJoint = start;
         endJoint = end;
         bone = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
         bone.transform.localScale = new Vector3(0.1f, 1f, 0.1f);
+
+        Rigidbody tempRigidBody = bone.AddComponent<Rigidbody>();
+        tempRigidBody.useGravity = false;
+        tempRigidBody.isKinematic = false;
     }
 
     public void update(){
@@ -25,6 +31,9 @@ public class Bone{
     }
 }
 
+// TODO find solution : bug with miror : double all the elements
+// https://answers.unity.com/questions/1534621/vr-how-to-render-gameobject-in-one-eye-only.html
+// https://assetstore.unity.com/packages/vfx/shaders/fullscreen-camera-effects/vr-eye-shaders-88499?_ga=2.228974492.1618207112.1581084038-513779130.1578677382
 
 /****************
 Joints structure :
@@ -93,12 +102,17 @@ public class KiVeSkeleton : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        Rigidbody tempRigidBody;
+
         getVRComponent();   
         //getKinectVRPN();
 
         for(int i=0;i<14;++i){
             joints.Add(GameObject.CreatePrimitive(PrimitiveType.Sphere));
             joints[i].transform.localScale = new Vector3(0.1f, 0.1f, 0.1f);
+            tempRigidBody = joints[i].AddComponent<Rigidbody>();
+            tempRigidBody.useGravity = false;
+            tempRigidBody.isKinematic = false;
             switch(i){
                 case HEAD:              {joints[i].name = "Head";           break;}
                 case NECK:              {joints[i].name = "Neck";           break;}
@@ -117,12 +131,8 @@ public class KiVeSkeleton : MonoBehaviour
                 default : break;
             }
         }
-        //Debug.Log(joints.Count);
-        // TODO better code because it's irreadable :( 
-        // or leave it that way, it works
-
-        // TODO Erreur !! les deux épaules ont l'air d'être lié à la tête et pas au bas du coup !!!!
-        // A CORRIGER !!!!!
+        joints[HEAD].GetComponent<MeshRenderer>().enabled = false;
+        
 
         for(int i=0;i<14;++i){
             if(i==4){
@@ -137,6 +147,7 @@ public class KiVeSkeleton : MonoBehaviour
                 bones.Add(new Bone(joints[i].transform, joints[i+1].transform));
             }
         }
+        bones[0].getBone().GetComponent<MeshRenderer>().enabled = false;
     }
 
     public Transform getHeadset(){
@@ -159,14 +170,14 @@ public class KiVeSkeleton : MonoBehaviour
             Transform cameraRig = GameObject.Find("/[CameraRig]").transform;
             Vector3 playerPos = headset.position;
             float playerHeigth = headset.localPosition.y;
-            joints[LEFT_FOOT].transform.position        = playerPos + new Vector3(0.3f, 0, 0);
-            joints[RIGHT_FOOT].transform.position       = playerPos + new Vector3(-0.3f, 0, 0);
-            joints[LEFT_KNEE].transform.position        = playerPos + new Vector3(0.3f, -3*playerHeigth/4, 0);
-            joints[RIGHT_KNEE].transform.position       = playerPos + new Vector3(-0.3f, -3*playerHeigth/4, 0);
-            joints[LEFT_HIPS].transform.position        = playerPos + new Vector3(0.3f, -2*playerHeigth/4, 0);
-            joints[RIGHT_HIPS].transform.position       = playerPos + new Vector3(-0.3f, -2*playerHeigth/4, 0);
-            joints[LEFT_SHOULDER].transform.position    = playerPos + new Vector3(0.3f, -playerHeigth/4, 0);
-            joints[RIGHT_SHOULDER].transform.position   = playerPos + new Vector3(-0.3f, -playerHeigth/4, 0);
+            joints[LEFT_FOOT].transform.position        = playerPos + new Vector3(0.2f, -playerHeigth, 0);
+            joints[RIGHT_FOOT].transform.position       = playerPos + new Vector3(-0.2f, -playerHeigth, 0);
+            joints[LEFT_KNEE].transform.position        = playerPos + new Vector3(0.2f, -3*playerHeigth/4, 0);
+            joints[RIGHT_KNEE].transform.position       = playerPos + new Vector3(-0.2f, -3*playerHeigth/4, 0);
+            joints[LEFT_HIPS].transform.position        = playerPos + new Vector3(0.2f, -2*playerHeigth/4, 0);
+            joints[RIGHT_HIPS].transform.position       = playerPos + new Vector3(-0.2f, -2*playerHeigth/4, 0);
+            joints[LEFT_SHOULDER].transform.position    = playerPos + new Vector3(0.2f, -playerHeigth/4, 0);
+            joints[RIGHT_SHOULDER].transform.position   = playerPos + new Vector3(-0.2f, -playerHeigth/4, 0);
             joints[NECK].transform.position             = playerPos + new Vector3(0, -playerHeigth/4, 0);
             joints[LEFT_ELBOW].transform.position       = (leftHand.position + joints[LEFT_SHOULDER].transform.position)/2;
             joints[RIGHT_ELBOW].transform.position      = (rightHand.position + joints[RIGHT_SHOULDER].transform.position)/2;
