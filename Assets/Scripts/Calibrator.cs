@@ -21,7 +21,7 @@ public class Calibrator
         posViveMat.SetRow(1, new Vector4(rightCtrl.x, rightCtrl.y, rightCtrl.z, 0));
         posViveMat.SetRow(2, new Vector4(headset.x, headset.y, headset.z, 0));
 
-        kiveMat = posViveMat * posViveMat.inverse;
+        kiveMat = posKiMat.inverse * posViveMat;
     }
 
     // Return the joint position in Vive coordinates

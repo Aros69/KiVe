@@ -75,12 +75,12 @@ public class SkeletonContainer : NetworkBehaviour
     
     public void UpdateJoints()
     {
-        Debug.Log("Nombre de joint dans le squelettes : " + m_skeleton.Count);
+        //Debug.Log("Nombre de joint dans le squelettes : " + m_skeleton.Count);
         for(int i = 0; i < m_skeleton.Count; i++)
         {
             Kine_joint j = new Kine_joint(); j.position = m_skeleton[i].position; j.rotation = m_skeleton[i].rotation;
             m_Kine_joints[i] = j;
-            Debug.Log("Joint n° : "+ i + " est a la position" + m_Kine_joints[i].position);
+            //Debug.Log("Joint n° : "+ i + " est a la position" + m_Kine_joints[i].position);
         }
     }
 }
