@@ -84,6 +84,9 @@ public class KiVeSkeleton : MonoBehaviour
     private GameObject skeletonData = null;
     private SkeletonContainer kinectSkeleton = null;
 
+    private Calibrator calibrator = new Calibrator();
+
+    private float kinectSkeletonHeight = 0.0f;
     private void getVRComponent(){
         // Search and hopefully find the CameraRig component of SteamVR plugin (the component should be at root of scene)
         Transform cameraRig = GameObject.Find("/[CameraRig]").transform;
@@ -174,9 +177,6 @@ public class KiVeSkeleton : MonoBehaviour
     }
 
     private void asICanSkeletonUpdate(){
-            joints[HEAD].transform.position = headset.position;  
-            joints[LEFT_HAND].transform.position = leftHand.position;  
-            joints[RIGHT_HAND].transform.position = rightHand.position;
 
             Transform cameraRig = GameObject.Find("/[CameraRig]").transform;
             Vector3 playerPos = headset.position;
@@ -193,13 +193,37 @@ public class KiVeSkeleton : MonoBehaviour
             joints[LEFT_ELBOW].transform.position       = (leftHand.position + joints[LEFT_SHOULDER].transform.position)/2;
             joints[RIGHT_ELBOW].transform.position      = (rightHand.position + joints[RIGHT_SHOULDER].transform.position)/2;
 
-        for(int i=0;i<14;++i){
-            bones[i].update();
-        }
+        
     }
 
     public void kinectSkeletonUpdate() {
         List<Kine_joint> jointsKinect = kinectSkeleton.GetJoints();
+        Debug.Log(jointsKinect.Count);
+        Vector3 leftCtrl    = joints[LEFT_HAND].transform.position, 
+            rightCtrl       = joints[RIGHT_HAND].transform.position,
+            leftHand        = jointsKinect[LEFT_HAND].position,
+            rightHand       = jointsKinect[RIGHT_HAND].position,
+            head            = jointsKinect[HEAD].position;
+        Transform headsetT = getHeadset();
+        
+        if(Vector3.Distance(jointsKinect[HEAD].position, jointsKinect[LEFT_FOOT].position) > kinectSkeletonHeight )
+            kinectSkeletonHeight = Vector3.Distance(jointsKinect[HEAD].position, jointsKinect[LEFT_FOOT].position);
+
+        if(Vector3.Distance(jointsKinect[HEAD].position, jointsKinect[RIGHT_FOOT].position) > kinectSkeletonHeight )
+            kinectSkeletonHeight = Vector3.Distance(jointsKinect[HEAD].position, jointsKinect[RIGHT_FOOT].position);
+
+        calibrator.computeKive(leftCtrl,  rightCtrl,  headsetT,
+          leftHand,  rightHand,  head, kinectSkeletonHeight);
+
+        Debug.Log("Kinect skeleton height : " + kinectSkeletonHeight);
+        Debug.Log("Kive Matrix : " + calibrator.kiveMat.ToString());
+
+        for(int i=0;i<jointsKinect.Count;++i){
+            if(i!=HEAD && i!=RIGHT_HAND && i!=LEFT_HAND) {
+                // joints[i].transform.position = calibrator.kinect2VivePos(jointsKinect[i].position);
+                joints[i].transform.position = calibrator.getViveJoint(jointsKinect[i].position);
+            }
+        }
     }
 
     // Update is called once per frame
@@ -210,10 +234,21 @@ public class KiVeSkeleton : MonoBehaviour
         }
         if(skeletonData == null){getKinectVRPN();}
 
+
+        // Update head, left and right hand (basic known position)
+        joints[HEAD].transform.position = headset.position;  
+        joints[LEFT_HAND].transform.position = leftHand.position;  
+        joints[RIGHT_HAND].transform.position = rightHand.position;
+
         if(skeletonData == null){
             asICanSkeletonUpdate();
         } else {
             kinectSkeletonUpdate();
+        }
+
+        // Bones update
+        for(int i=0;i<14;++i){
+            bones[i].update();
         }
         
     }
