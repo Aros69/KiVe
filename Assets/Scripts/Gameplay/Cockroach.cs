@@ -14,6 +14,8 @@ public class Cockroach : MonoBehaviour
     public static int squishedRoaches;
 
     private bool moving = true;
+
+    public float range = 1.0f;
     // Start is called before the first frame update
     void Start()
     {
@@ -36,11 +38,13 @@ public class Cockroach : MonoBehaviour
             m_rigidbody.AddForce((m_target - m_rigidbody.position).normalized * speed * 10, ForceMode.VelocityChange);
             //transform.LookAt(m_target);
         }
+        else
+            Destroy(m_rigidbody);
     }
 
     public void OnTriggerEnter(Collider col)
     {
-        if(col.gameObject.tag.Equals("Player"))
+        if(col.gameObject.tag.Equals("Player") || col.name.Contains("Player"))
             StartCoroutine(Squish());
     }
     private IEnumerator GetRandomTarget()
@@ -55,8 +59,8 @@ public class Cockroach : MonoBehaviour
 
     public void SetRandomTarget()
     {
-        m_target = new Vector3( player.position.x + Random.Range(-10.0f,10.0f), transform.position.y, 
-                                player.position.z + Random.Range(-10.0f,10.0f) ); 
+        m_target = new Vector3( player.position.x + Random.Range(-range, range), transform.position.y, 
+                                player.position.z + Random.Range(-range, range) ); 
     }
     private IEnumerator Squish()
     {

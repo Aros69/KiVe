@@ -14,11 +14,13 @@ public class Bone{
         endJoint = end;
         bone = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
         bone.name = "PlayerBone";
+        bone.tag = "Player";
         bone.transform.localScale = new Vector3(0.1f, 1f, 0.1f);
 
         Rigidbody tempRigidBody = bone.AddComponent<Rigidbody>();
         tempRigidBody.useGravity = false;
         tempRigidBody.isKinematic = false;
+        bone.GetComponent<CapsuleCollider>().isTrigger = true;
     }
 
     public void update(){
